@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<!-- TO DO: Add a map title -->
+	<title>Wolf Packs in Washington</title>
+	<!-- TO DO: Import Bootstrap (first), Leaflet (second), and ColorBrewer (third) -->
+	<!doctype html>
+	<html lang="en">
+	  <head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Bootstrap demo</title>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+	  </head>
+	  <body>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
+	  </body>
+	</html>
+
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
+ <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+ integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+ crossorigin=""></script>
+
+ <script src="https://colorbrewer2.org/export/colorbrewer.js"></script>
+
+
+    <!-- TO DO: Import GeoJSON file, converted to JS file with variable declaration -->
+	 <script src="wolfpacksallyears.js"></script>
+	<!-- -->
+    <style>
+		/* TO DO: Write custom CSS for map and legend as needed */
+		#map {
+			height: 700px;
+			margin-top: 70px;
+		}
+		#map path:hover {
+			fill: yellow;
+			stroke: yellow;
+		}
+		#legend {
+			background-color: #ffffff;
+			border: 2px solid rgba(0,0,0,0.2);
+			border-radius: 4px;
+			padding: 5x;
+		}
+		#legend-title {
+			font-weight: bold;
+			border-bottom: 1px solid rgba(0,0,0,0.2);
+			margin-bottom: 5px;
+			padding-bottom: 5px;
+		}
+		.legend-row {
+			display: table;
+		}
+		.legend-color {
+			display: table-cell;
+			width: 30px;
+			height: 30px;
+		}
+		.legend-caption {
+			display: table-cell;
+			padding-left: 5px;
+			vertical-align: middle;
+		}
+	</style>
+</head>
+<body>
+	<!-- TO DO: Create single-column Bootstrap layout with three rows: one for the map's header (title and subtitle), a second row containing the required map controls, and another containing the map itself -->
+	<div class="container">
+		<div class="row">
+			<div class="col">
+				<h3>Wolf Pack Ranges in Washington (2014 - 2024)</h3>
+				<h6>With data published by the <a href="https://geo.wa.gov/datasets/wdfw::wolf-pack-polygons-current-year/about">Washington Department of Fish and Wildlife</a>, this map depicts the range of gray wolf packs within the state of Washington as reported within the past decade. Data is available from the years 2014 through 2024. The user can select a given year to display range extents for that time period, and use the slider to see how pack dynamics have changed. Hovering over a pack's range will provide the user with the name of the observed wolf pack in that area, as well as a description of the wolves observed (i.e., breeding pairs, single wolf, etc.) if data is available for that year.</h6>
+			</div>
+		</div>
+		<hr/>
+		<div class="row">
+			<div class="col">
+			<label for="selectyear" class="form-label">Data Year (<span id="year">2014</span>)</label>
+			<input type="range" class="form-range" min="2014" max="2024" id="selectyear" onchange="drawMap()">
+			</div>
+			
+		</div>
+		<div class="row">
+			<div class="col">
+				<div id="map"></div>
+			</div>
+		</div>
+	 </div>
+	
+    <!-- TO DO: Outside the container, create the structure of the legend -->
+	 <div id="legend">
+		<div id="legend-title">Year:</div>
+		<!-- <div id="legend-rows"></div> -->
+		<div class="legend-row">
+			<div class="legend-color" style="background-color: #8dd3c7"></div>
+			<div class="legend-caption">2014</div>
+		</div>
+		<div class="legend-row">
+			<div class="legend-color" style="background-color: #ffffb3"></div>
+			<div class="legend-caption">2015</div>
+		</div>
+		<div class="legend-row">
+			<div class="legend-color" style="background-color: #bebada"></div>
+			<div class="legend-caption">2016</div>
+		</div>
+		<div class="legend-row">
+			<div class="legend-color" style="background-color: #fb8072"></div>
+			<div class="legend-caption">2017</div>
+		</div>
+		<div class="legend-row">
+			<div class="legend-color" style="background-color: #80b1d3"></div>
+			<div class="legend-caption">2018</div>
+		</div>
+		<div class="legend-row">
+			<div class="legend-color" style="background-color: #fdb462"></div>
+			<div class="legend-caption">2019</div>
+		</div>
+		<div class="legend-row">
+			<div class="legend-color" style="background-color: #b3de69"></div>
+			<div class="legend-caption">2020</div>
+		</div>
+		<div class="legend-row">
+			<div class="legend-color" style="background-color: #fccde5"></div>
+			<div class="legend-caption">2021</div>
+		</div>
+		<div class="legend-row">
+			<div class="legend-color" style="background-color: #d9d9d9"></div>
+			<div class="legend-caption">2022</div>
+		</div>
+		<div class="legend-row">
+			<div class="legend-color" style="background-color: #bc80bd"></div>
+			<div class="legend-caption">2023</div>
+		</div>
+		<div class="legend-row">
+			<div class="legend-color" style="background-color: #ccebc5"></div>
+			<div class="legend-caption">2024</div>
+		</div>
+	 </div>
+</body>
+</html>
+<script type="text/javascript">
+
+// TO DO: Write utility function to return fill color for polygons
+function fillColor(p) {
+	if (p == 2014) return '#8dd3c7';
+	else if (p == 2015) return '#ffffb3';
+	else if (p == 2016) return '#bebada';
+	else if (p == 2017) return '#fb8072';
+	else if (p == 2018) return '#80b1d3';
+	else if (p == 2019) return '#fdb462';
+	else if (p == 2020) return '#b3de69';
+	else if (p == 2021) return '#fccde5';
+	else if (p == 2022) return '#d9d9d9';
+	else if (p == 2023) return '#bc80bd';
+	else if (p == 2024) return '#ccebc5';
+	
+	else return '#aaaaaa';
+}
+
+// TO DO: Initialize the variable for the primary map data layer with a null value so that we can access this variable globally
+let datalayer = null;
+
+// TO DO: Initialize the map with an appropriate center and zoom level
+let map = L.map('map').setView([47.45578705599177, -120.64335081545737], 7);
+
+// TO DO: Add a visually appealing and unobtrusive basemap
+let basemap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+	attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+}).addTo(map);
+
+// TO DO: Create a function to draw the GeoJSON data layer (to be called any time the map control dropdowns are changed)
+function drawMap() {
+
+
+	let yearSelect = document.getElementById("selectyear");
+	selected_year = Number(yearSelect.value);
+	document.getElementById("year").innerHTML = selected_year;
+	
+	if (datalayer != null) map.removeLayer(datalayer);
+
+	// TO DO WITHIN FUNCTION : Add GeoJSON data layer, using style property to apply appropriate fill color, stroke width, and stroke color.  Bind a tooltip showing variable values to each feature as well, within the pointToLayer function.
+	datalayer = L.geoJSON(wolves, {
+		style: function(feature) {
+			return {
+				'fillColor': fillColor(feature.properties.Year),
+				'color': fillColor(feature.properties.Year),
+				'weight': 1
+			}
+		},
+		filter: function(feature) {
+			return feature.properties["Year"] == selected_year
+		}
+		
+	})
+	.bindTooltip(function(layer) {
+		return `<strong>Pack Name: ${layer.feature.properties.Pack}</strong><hr/>Pack Description: ${layer.feature.properties.PackStatus}`
+	})
+	.addTo(map);
+
+	// TO DO WITHIN FUNCTION: Create new Leaflet control and using the onAdd function, take the contents of the legend in the DOM and assign it to the new Leaflet control
+	
+	
+}
+	
+// TO DO: Call map drawing function to initialize map with default values
+drawMap();
+
+</script>
+
+
+
